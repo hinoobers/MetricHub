@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
-            fetch("/login", {
+            fetch("/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -22,9 +22,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     window.location.href = "/dashboard.html";
                 }
             });
-
-
-
         });
     }
 
@@ -35,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
-            fetch("/register", {
+            fetch("/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

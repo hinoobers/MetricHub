@@ -26,6 +26,8 @@ const initTables = async () => {
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
             instance_name VARCHAR(255) NOT NULL,
+            custom_data LONGTEXT,
+            page LONGTEXT,
             FOREIGN KEY (user_id)
                 REFERENCES users(id)
                 ON DELETE CASCADE

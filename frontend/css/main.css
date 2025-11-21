@@ -112,6 +112,25 @@ button {
     box-sizing: border-box;
 }
 
+.modal-content #page-contents {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+}
+
+.modal-content #page-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    border: #333 3px solid;
+}
+
 /* Actions/buttons area */
 .modal-actions {
     text-align: right;
