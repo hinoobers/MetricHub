@@ -13,7 +13,10 @@ app.use(express.static("frontend/"));
 
 
 app.get("/status", async (req, res) => {
-    res.json({ status: "Server is running" });
+    const [userCount] = await db.query("SELECT COUNT(*) AS userCount FROM users");
+    const [instanceCount] = await db.query("SELECT COUNT(*) AS instanceCount FROM tracked_instances");
+
+    res.json({ status: "Server is running", userCount: userCount[0].userCount, instanceCount: instanceCount[0].instanceCount });
 });
 app.post("/collect-data", async (req, res) => {
 
@@ -78,7 +81,7 @@ app.post("/register", async (req, res) => {
     }
 
     const password_hash = await bcrypt.hash(password, 10);
-    const result = await db.query("INSERT INTO users (email, username, password_hash) VALUES (?, ?, ?)", [email, username, password_hash]);
+    const [result] = await db.query("INSERT INTO users (email, username, password_hash) VALUES (?, ?, ?)", [email, username, password_hash]);
     if(result.affectedRows === 1) {
         return res.status(201).json({ message: "User registered successfully" });
     } else {

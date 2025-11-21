@@ -12,7 +12,7 @@ const pool = mysql2.createPool({
 });
 
 const initTables = async () => {
-    await db.query(`
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
             email VARCHAR(255) NOT NULL,
@@ -21,7 +21,7 @@ const initTables = async () => {
         )
     `);
 
-    await db.query(`
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS tracked_instances (
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
@@ -32,7 +32,7 @@ const initTables = async () => {
         )
     `);
 
-    await db.query(`
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS instance_data (
             id INT AUTO_INCREMENT PRIMARY KEY,
             instance_id INT NOT NULL,
