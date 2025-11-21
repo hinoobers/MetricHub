@@ -1,15 +1,16 @@
+require("dotenv").config();
 const express = require('express');
 const app = express();
+const bcrypt = require('bcrypt');
+const jsonwebtoken = require('jsonwebtoken');
+const JWT_SECRET = process.env.WEBTOKEN_SECRET_KEY
 
-const db = require('./util/database');
+const {db, initTables} = require('./util/database');
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("frontend/"));
 
-() => {
-    db.prepare("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, email VARCHAR(255), username VARCHAR(255) UNIQUE, password_hash VARCHAR(255))").run();
-    db.prepare("CREATE TABLE IF NOT EXISTS tracked_instances (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT, instance_name VARCHAR(255), FOREIGN KEY (user_id) REFERENCES users(id))").run();
-    db.prepare("CREATE TABLE IF NOT EXISTS instance_data (id INT AUTO_INCREMENT PRIMARY KEY, instance_id INT, instance_version TEXT, operating_system TEXT, java_version TEXT, custom_data LONGTEXT, date DATETIME, FOREIGN KEY (instance_id) REFERENCES tracked_instances(id) ON DELETE CASCADE)").run();
-};
 
 app.get("/status", async (req, res) => {
     res.json({ status: "Server is running" });
@@ -19,13 +20,73 @@ app.post("/collect-data", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
+    const { 
+        email,
+        password 
+    } = req.body;
 
+    if (!email || !password) {
+        return res.status(400).json({ error: "Missing email or password" });
+    }
+
+    if (typeof email !== 'string' || typeof password !== 'string') {
+        return res.status(400).json({ error: "Invalid data types" });
+    }
+
+    const [users] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (users.length === 0) {
+        return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const user = users[0];
+    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    if (!passwordMatch) {
+        return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jsonwebtoken.sign(
+        { id: user.id, username: user.username, email: user.email },
+        JWT_SECRET,
+        { expiresIn: '1h' } // token expires in 1 hour
+    );
+
+    res.json({ message: "Login successful", token });
 });
 
 app.post("/register", async (req, res) => {
+    const {
+        email, 
+        username,
+        password
+    } = req.body;
 
+    if(!email || !username || !password) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    if(typeof email !== 'string' || typeof username !== 'string' || typeof password !== 'string') {
+        return res.status(400).json({ error: "Invalid data types" });
+    }
+
+    if(password.length < 8) {
+        return res.status(400).json({ error: "Password must be at least 8 characters long" });
+    }
+
+    const [existingUserByEmail] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if(existingUserByEmail.length > 0) {
+        return res.status(400).json({ error: "Email already in use" });
+    }
+
+    const password_hash = await bcrypt.hash(password, 10);
+    const result = await db.query("INSERT INTO users (email, username, password_hash) VALUES (?, ?, ?)", [email, username, password_hash]);
+    if(result.affectedRows === 1) {
+        return res.status(201).json({ message: "User registered successfully" });
+    } else {
+        return res.status(500).json({ error: "Failed to register user" });
+    }
 });
 
 app.listen(3000, () => {
+    initTables();
     console.log('Server is running on http://localhost:3000');
 });
