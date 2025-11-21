@@ -40,6 +40,7 @@ const initTables = async () => {
             operating_system TEXT,
             java_version TEXT,
             custom_data LONGTEXT,
+            client_id CHAR(32),
             date DATETIME,
             FOREIGN KEY (instance_id)
                 REFERENCES tracked_instances(id)
