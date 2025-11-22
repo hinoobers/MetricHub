@@ -57,7 +57,7 @@ button {
 #instance-table tbody tr:last-child {
     border-bottom: none;
 }
-/* Modal styles */
+
 .modal {
     display: none;
     position: fixed;
@@ -74,7 +74,6 @@ button {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Optional: overlay dim behind modal */
 .modal::before {
     content: "";
     position: fixed;
@@ -85,8 +84,6 @@ button {
     background-color: rgba(0,0,0,0.4);
     z-index: -1;
 }
-
-/* Modal title */
 .modal-title {
     font-size: 20px;
     font-weight: 600;
@@ -94,7 +91,6 @@ button {
     color: #333;
 }
 
-/* Modal content area */
 .modal-content {
     margin-bottom: 20px;
     color: #555;
@@ -112,10 +108,8 @@ button {
     box-sizing: border-box;
 }
 
-.modal-content #page-contents {
-    max-height: 200px;
+.modal-content .page-contents {
     overflow-y: auto;
-    background-color: #f9f9f9;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -123,15 +117,16 @@ button {
     font-size: 14px;
 }
 
-.modal-content #page-content {
+.modal-content .page-content {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 5px;
-    border: #333 3px solid;
+    border: #555 3px solid;
+    margin: 5px;
+    border-radius: 3px;
 }
 
-/* Actions/buttons area */
 .modal-actions {
     text-align: right;
 }

@@ -16,20 +16,27 @@ function addInstance(name) {
     });
 }
 
-function addPageContent() {
+function addPageContent(sysDataFields, customDataFields) {
     const pageContents = document.querySelector("#page-contents");
     const contentDiv = document.createElement("div");
     contentDiv.className = "page-content";
     contentDiv.innerHTML = `
-        <p>OS distribution</p>
+        <p>Data Type</p>
         <select class="data-select">
-            <option value="operating_system">Operating System</option>
+        ${Object.keys(sysDataFields).map(field => `
+            <option value="${field}" ${content.dataField === field ? "selected" : ""}>${field}</option>
+        `).join('')}
+        ${JSON.parse(customDataFields).map(field => `
+            <option value="${field.name}" ${content.dataField === field ? "selected" : ""}>${field.name}</option>
+        `).join('')}
         </select>
+        <p>Chart Type</p>
         <select class="chart-type-select">
             <option value="pie">Pie Chart</option>
             <option value="bar">Bar Chart</option>
             <option value="line">Line Chart</option>
         </select>
+        <button onclick="this.parentElement.remove()">Remove</button>
     `;
     pageContents.appendChild(contentDiv);
 }
@@ -136,10 +143,11 @@ document.addEventListener("DOMContentLoaded", function() {
                                         <option value="bar" ${content.type === "bar" ? "selected" : ""}>Bar Chart</option>
                                         <option value="line" ${content.type === "line" ? "selected" : ""}>Line Chart</option>
                                     </select>
+                                    <button onclick="this.parentElement.remove()">Remove</button>
                                 </div>
                             `).join('')}
                         </div>
-                        <button onclick="addPageContent()">Add Content</button>
+                        <button onclick='addPageContent(${JSON.stringify(data[0].sys_data)}, ${JSON.stringify(instance.custom_data)})'>Add Content</button>
                     `;
 
                     const actions = `
