@@ -11,11 +11,16 @@ app.use(express.static("frontend/"));
 
 
 app.get("/status", async (req, res) => {
-    const [userCount] = await db.query("SELECT COUNT(*) AS userCount FROM users");
-    const [instanceCount] = await db.query("SELECT COUNT(*) AS instanceCount FROM tracked_instances");
+    try {
+        const [userCount] = await db.query("SELECT COUNT(*) AS userCount FROM users");
+        const [instanceCount] = await db.query("SELECT COUNT(*) AS instanceCount FROM tracked_instances");
 
-    res.json({ status: "Server is running", userCount: userCount[0].userCount, instanceCount: instanceCount[0].instanceCount });
+        res.json({ status: "Server is running", userCount: userCount[0].userCount, instanceCount: instanceCount[0].instanceCount });
+    } catch (error) {
+        return res.status(500).json({ status: "error", error: "Database query failed" });
+    }
 });
+
 app.post("/collect-data", async (req, res) => {
     const {
         instance_id,
